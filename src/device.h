@@ -1,5 +1,5 @@
 /*
- * Device.h
+ * IncFile1.h
  *
  * Created: 15/03/2020 1:30:20 PM
  *  Author: csam754
@@ -9,7 +9,6 @@
 #ifndef DEVICE_H_
 #define DEVICE_H_
 #include "sam.h"
-#include "sercom_i2c.h"
 
 
 
@@ -40,4 +39,4 @@ void dev_init(void);
 
 
 
-#endif /* DEVICE_H_ */
+#endif /* INCFILE1_H_ */

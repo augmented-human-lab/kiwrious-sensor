@@ -36,9 +36,7 @@ Definitions
 
 #define K_PKT_TYPE_DATA	1
 
-/*
-TODO: Test: Unaligned access to data*?
-*/
+
 typedef  struct
 {
 	int16_t header; //Packet header constant  0x0A0A
@@ -109,6 +107,6 @@ const char* sensor_name();
 uint16_t sensor_read(int16_t* dest);
 
 
-#define KIW_SENSOR_TYPE SENSOR_TYPE_CONDUCTIVTIY
+#define KIW_SENSOR_TYPE SENSOR_TYPE_UV_LIGHT
 
 #endif /* SENSOR_H_ */

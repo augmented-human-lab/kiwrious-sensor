@@ -21,8 +21,6 @@ int main(void)
 	
 	clock_init();
 	dev_init(); //Initialize device
-	/* TODO: Check this pin config
-	*/
 	PORT->Group[0].DIRSET.reg = (3 << 22);
 	PORT->Group[0].PINCFG[22].bit.INEN = 1;
 	i2c_init();
@@ -33,22 +31,24 @@ int main(void)
 	usb_init();
 	usb_attach();
 #endif
-	//Wait for enumeration to complete
-	clock_delayMs(100);
+	//Need to allow time for enumeration to complete
+	uint32_t tick = clock_getTicks();
+	while((clock_getTicks()-tick)<100);
 	
 #ifndef NO_USB
 	usbserial_init();
 #endif
 	
 
-	Kiw_DataPacket packet;
+	 Kiw_DataPacket packet;
 	 
 	sensor_init(&packet);
 	
 	
 	
-	//Wait for enumeration to complete
-	clock_delayMs(100);
+	//Need to allow time for enumeration to complete
+	 tick = clock_getTicks();
+	while((clock_getTicks()-tick)<100);
 	
 
 
@@ -62,17 +62,14 @@ int main(void)
 	
 		
 		uint16_t count = sensor_read(packet.data);
-
 		packet.len = count;
 		packet.seq ++;
 
 
 		while((clock_getTicks()-timestamp) < 100);
 		timestamp = clock_getTicks();
-	//	dev_led(1, 0);
-			usbserial_tx(packet.data, 2);
-			continue;
 
+		usbserial_tx((uint8_t*)&packet, sizeof(packet));
 		
 		
 		
@@ -86,4 +83,3 @@ void HardFault_Handler(){
 	
 	for(;;);
 	};
-	

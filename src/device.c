@@ -7,8 +7,7 @@
 
 
 #include "device.h"
-#include <string.h>
-#include "USB/usbserial.h"
+
 void dev_led(uint8_t led, uint8_t status)
 {
 	if(led == 0)
@@ -59,5 +58,5 @@ void i2c_scan()
 	}
 
 	*w++ = 0;
-	usbserial_tx((uint8_t*)outstr, strlen(outstr));
+	usbserial_tx(outstr, strlen(outstr));
 }

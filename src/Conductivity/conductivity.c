@@ -18,8 +18,8 @@ static uint32_t g_range;
 
 
 	
-const float diode_compensation =  0.25; //compensation for the 100mV drop of the schottkey diode
-const float fuse_resistnce = 8.0; //Resistance of polyfuse in normal operation mode
+const float diode_compensation =  0.1; //compensation for the 100mV drop of the schottkey diode
+
 uint8_t cdt_init()
 {
 	
@@ -50,20 +50,6 @@ uint8_t cdt_init()
 	PORT->Group[0].PINCFG[8].bit.PMUXEN = 1;
 	PORT->Group[0].PMUX[4].reg = PORT_PMUX_PMUXE(PORT_PMUX_PMUXE_B_Val);
 	
-#endif
-
-#if K_HW_VERSION ==3
-
-	PORT->Group[0].DIRSET.reg = (1 << PIN_RANGE_1) |
-								(1 << PIN_RANGE_2) |
-								(1 << PIN_RANGE_3) |
-								(1 << PIN_DIVIDER);
-
-PORT->Group[0].PINCFG[11].bit.PMUXEN = 1;
-PORT->Group[0].PINCFG[11].bit.PULLEN = 0;
-PORT->Group[0].PMUX[4].bit.PMUXO = PORT_PMUX_PMUXO(PORT_PMUX_PMUXO_B_Val);;
-
-
 #endif
 	
 	PM->APBCMASK.bit.ADC_ = 1; // Enable ADC Bus clock
@@ -134,13 +120,13 @@ void cdt_setMode(uint32_t mode)
 		case CDT_MODE_RESISTANCE:
 			cdt_setPortA(PIN_DIVIDER, 0); //Disable /10 division
 			cdt_setRangeResistance(1); //Set the highest resistance ranges
-			cdt_setADCInput(AIN_1);
+			cdt_setADCInput(AIN_10X);
 		break;
 		
 		case CDT_MODE_VOLTAGE:
 			cdt_setPortA(PIN_DIVIDER, 1); //Enable /10 division
 			cdt_setRangeResistance(0); // This disconnects divider resistors used in resistance measurement
-			cdt_setADCInput(AIN_1);
+			cdt_setADCInput(AIN_10X);
 		break;
 	}
 	g_mode = mode;
@@ -153,21 +139,21 @@ void cdt_setRangeResistance(uint8_t range)
 	{
 		switch (range)
 		{
-			case 1: //100k
+			case 1:
 				cdt_setPortA(PIN_RANGE_2, 0);
 				cdt_setPortA(PIN_RANGE_3, 0);
 				cdt_setPortA(PIN_RANGE_1, 1);
 				cdt_setADCInput(AIN_1);
 				g_range = 1;
 				break;
-			case 2: //10k
+			case 2:
 				cdt_setPortA(PIN_RANGE_1, 0);
 				cdt_setPortA(PIN_RANGE_3, 0);
 				cdt_setPortA(PIN_RANGE_2, 1);
 				cdt_setADCInput(AIN_1);
 				g_range = 2;
 				break;
-			case 3: //1k
+			case 3:
 				cdt_setPortA(PIN_RANGE_1, 0);
 				cdt_setPortA(PIN_RANGE_2, 0);
 				cdt_setPortA(PIN_RANGE_3, 1);
@@ -221,13 +207,13 @@ int16_t cdt_readAuto(int16_t* value, int16_t* range, int16_t* debug_buffer)
 		
 		t = clock_getTicks();
 		while((clock_getTicks()-t) < 10);
-		uint16_t  discard = cdt_readADC();
+		
 		adc_values[i-1] = cdt_readADC();
 		
 	}
 	
 	
-	const float adc_max = (4096/3.3*(3.3-diode_compensation)); //TODO: different values for didfferent ranges
+	
 	
 	if (adc_values[0] > 4000)
 	{
@@ -236,22 +222,22 @@ int16_t cdt_readAuto(int16_t* value, int16_t* range, int16_t* debug_buffer)
 	}
 	else if (adc_values[0] < 4000 && adc_values[1] > 3000) //Use the 100k range for measurement
 	{
-		float a = (float)adc_values[0];
-		float out = a*1000/(adc_max - a);
+		float a = adc_values[0];
+		float out = 3300*a/(4096*(3.3-diode_compensation) - a*3.3);
 		*value = (int16_t) out;
 		*range = 100;
 	}
 	else if (adc_values[1] <= 3000 && adc_values[2] > 3000) //Use the 10k range
 	{
-		float a = (float)adc_values[1];
-		float out = a*1000/(adc_max - a);
+		float a = adc_values[1];
+		float out = 3300*a/(4096*(3.3-diode_compensation) - a*3.3);
 		*value = (int16_t) out;
 		*range = 10;
 	}
 	else 
 	{
-		float a = (float)adc_values[2];
-		float out = a*1000/(adc_max - a);
+		float a = adc_values[2];
+		float out = 3300*a/(4096*(3.3-diode_compensation) - a*3.3);
 		*value = (int16_t) out;
 		*range = 1;
 	}
@@ -259,12 +245,10 @@ int16_t cdt_readAuto(int16_t* value, int16_t* range, int16_t* debug_buffer)
 	
 	//for debug
 	if(debug_buffer)
-	{
-		
-		debug_buffer[0] = adc_values[0];
-		debug_buffer[1] = adc_values[1];
-		debug_buffer[2] = adc_values[2];
-	}
+	debug_buffer[0] = adc_values[0];
+	debug_buffer[1] = adc_values[1];
+	debug_buffer[2] = adc_values[2];
+	
 	return K_SENSOR_OK;
 	
 
