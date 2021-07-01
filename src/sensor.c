@@ -77,7 +77,7 @@ const char* sensor_name()
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_COLOUR
 		const char* s =  "Kiwrious Colour Sensor";
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT
-		const char* s =  "Kiwrious UV Sensor";
+		const char* s =  "Modified UV Sensor";
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_BODY_TEMP
 		const char* s =  "Kiwrious Temperature Sensor";
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE
@@ -145,11 +145,14 @@ uint16_t sensor_read(int16_t* dest)
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT
 	float res[2]; //lux, uv
 	int8_t e = measure_lux_uv(&res[0], &res[1]);
+	
+	char str[20];
+	unsigned long lux_int = res[0];
 //	if (e == K_SENSOR_OK)
 	{
-			
-		memcpy(dest, res, sizeof(float)*2);
-
+		snprintf(str, sizeof(str), "%u\n", lux_int);
+		//memcpy(dest, res, sizeof(float)*2);
+		memcpy(dest, str, strlen(str)+1);
 		return 8;
 	}
 	//else

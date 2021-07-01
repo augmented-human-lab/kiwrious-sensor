@@ -100,16 +100,16 @@ int main(void)
 		
 #else //For sensors other than HRM, only one packet is sent at a time
 	
-		
-		uint16_t count = sensor_read(packet->data);
-		packet->len = count;
-		packet->seq ++;
+		char tx[100];
+		uint16_t count = sensor_read(tx);
+		//packet->len = count;
+		//packet->seq ++;
 
 
 		while((clock_getTicks()-timestamp) < 100);
 		timestamp = clock_getTicks();
 
-		usbserial_tx((uint8_t*)packet, sizeof(Kiw_DataPacket));
+		usbserial_tx((uint8_t*)tx, strlen(tx)+1);
 #endif		
 		
 	}
