@@ -1,0 +1,22 @@
+<script src="libunicorn.out.js"></script>
+<script src="libelf-integers.js"></script>
+<script src="unicorn-wrapper.js"></script>
+<script src="unicorn-constants.js"></script>
+<script src="heartrate.js"></script>
+<script type="text/javascript">
+
+async function test() {
+	// Grab a packet from serial stream, 
+	const serialPacket = new Uint8Array(26);
+	// Grab heart rate data in a packet
+	const rawData = serialPacket.subarray(6,22);
+	// Detector 
+	const hr = new HeartRateDetector();
+	// Detect
+	const resp = await hr.detectHeartRate(rawData);
+	console.log(resp);
+}
+
+test();
+
+</script>
