@@ -15,7 +15,7 @@
 #include "USB/usb_lib.h"
 #include "USB/usbserial.h"
 #include "clock.h"
-//#include "C:\Users\csam754\Documents\Projects\Kiwrious\Firmware\Kiwrious-Sensor\src\PPG\sns_dd_pah_driver.h"
+#include "PPG/sns_dd_pah_driver.h"
 #include <stdbool.h>
 
 
@@ -53,7 +53,7 @@ int main(void)
 	while((clock_getTicks()-tick)<100);
 	
 
-		
+	
 	Kiw_DataPacket packets[10]; //Most sensors use only one data packet per reading, but HRM needs two
 	
 	Kiw_DataPacket* packet = &packets[0];
@@ -101,17 +101,15 @@ int main(void)
 #else //For sensors other than HRM, only one packet is sent at a time
 	
 		
-/*		uint16_t count = sensor_read(packet->data);
+		uint16_t count = sensor_read(packet->data);
 		packet->len = count;
 		packet->seq ++;
-*/
-		float lux, uv;
-		int8_t e = measure_lux_uv(&lux, &uv);
+
 
 		while((clock_getTicks()-timestamp) < 100);
 		timestamp = clock_getTicks();
 
-//		usbserial_tx((uint8_t*)packet, sizeof(Kiw_DataPacket));
+		usbserial_tx((uint8_t*)packet, sizeof(Kiw_DataPacket));
 #endif		
 		
 	}

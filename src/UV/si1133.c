@@ -141,6 +141,9 @@ const  Coeff_t  uk[2] = {
 //unsigned char    _D1;
 //unsigned char    _D0;
 
+
+#define NIBBLE_HEX(X) (X < 10 ? (X) + '0' : (X) + 'A'-10)
+
 //Private functions
 void            Si1133_wait_ms (unsigned long eWait);
 
@@ -333,10 +336,10 @@ uint32_t    read_register (enum  Register eRegister, uint8_t *data)  {
 
 			unsigned char buf[1];
 			
-			buf[0] = Si1133_I2CRead((uint8_t)eRegister);
+//			buf[0] = Si1133_I2CRead((uint8_t)eRegister);
 
 			*data = buf[0];
-
+			i2c_writeRead(SI1133_I2C_ADDRESS, &eRegister, 1, data, 1);
 			    
             return SI1133_OK;
 }
@@ -705,8 +708,13 @@ uint32_t  set_parameter (enum  Parameter address, uint8_t value)
  ******************************************************************************/
 uint32_t  read_parameter (enum  Parameter address)
 {
-    uint8_t retval;
+    uint32_t retval;
     uint8_t cmd;
+
+	
+	uint8_t cmd_ctr = 0;
+	read_register(REG_RESPONSE0,  &cmd_ctr);
+	cmd_ctr &= 0xf;
 
     cmd = 0x40 + ((uint8_t)address & 0x3F);
 
@@ -715,8 +723,12 @@ uint32_t  read_parameter (enum  Parameter address)
         return retval;
     }
 
+	uint8_t cmd_ctr2 = 0;
+	read_register(REG_RESPONSE0,  &cmd_ctr2);
+	cmd_ctr2 &= 0xf;
     read_register(REG_RESPONSE1, &retval);
 
+	retval |= (cmd_ctr << 8) | (cmd_ctr2 << 16);
     return retval;
 }
 
@@ -1025,6 +1037,19 @@ int32_t  measure_lux_uv_debug ()
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
+
+
+char nibble_hex(uint8_t x)
+{
+	return (x < 10 ? (x + '0') : (x + 'A'-10));
+}
+
+void byte_hex(uint8_t x, char* p)
+{
+	*p++ = nibble_hex(x&0xf);
+	*p = nibble_hex(x>>4);
+}
+
 int8_t  measure_lux_uv (float *lux, float *uvi)
 {
     Samples_t samples;
@@ -1045,16 +1070,49 @@ int8_t  measure_lux_uv (float *lux, float *uvi)
     }
 
     /* Get the results */
-    measure(&samples);
-
-    /* Convert the readings to lux */
+ //   measure(&samples);
+/*
+    /* Convert the readings to lux 
 	int32_t int_lux = get_lux(samples.ch1, samples.ch3, samples.ch2);
     *lux = (float) int_lux;
     *lux = *lux / (1 << LUX_OUTPUT_FRACTION);
 	float dest_lux = *lux;
-    /* Convert the readings to UV index */
+    /* Convert the readings to UV index 
     *uvi = (float) get_uv(samples.ch0);
     *uvi = *uvi / (1 << UV_OUTPUT_FRACTION);
+
+*/
+
+	char str[100];
+	int i_lux = *lux;
+	int i_uvi = *uvi*100;
+	snprintf(str, 100, "%d,  %d, %d\n", samples.ch1, samples.ch3, samples.ch2);
+
+	usbserial_tx(str, strlen(str));
+	clock_delayMs(100);
+		//Do a register dump
+	for (uint8_t regi = 0; regi <= 0x2c; regi++)
+	{
+		char out[] = "0x--   --\n";
+
+		byte_hex(regi, &out[2]);
+		uint8_t value = Si1133_I2CRead(regi);
+		byte_hex(value, &out[7]);
+
+		usbserial_tx(out, sizeof(out)-1);
+	}
+
+	clock_delayMs(200);
+
+	for (enum Parameter param = 0; param <= 0x2b; param++)
+	{
+		char out[21];
+
+		uint32_t value = read_parameter(param);
+		snprintf(out, 20, "0x%x  %x param\n",param,  value); 
+		usbserial_tx(out, strlen(out));
+	}
+
 
 	if (retval)
 		return K_SENSOR_STATUS_UNKNOWN;
