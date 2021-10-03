@@ -66,7 +66,7 @@ int main(void)
 	
 	
 	//HRM Sensor is special, it needs more than one packet
-#if KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE
+#if KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE_2
 	for (size_t i = 1; i < 20; i++)	
 	{
 		sensor_initPacket(&packets[i]);
@@ -81,7 +81,7 @@ int main(void)
 	{
 		
 	//HRM Sensor is special, it needs more than one packet
-#if KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE
+#if KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE_2
 		
 		ppg_read(packets);
 		for (size_t i = 0; i < 10; i++)

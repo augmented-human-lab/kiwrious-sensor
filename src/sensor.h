@@ -23,10 +23,12 @@ Definitions
 #define SENSOR_TYPE_BODY_TEMP 		2	// Body temperature and ambient temperature
 #define SENSOR_TYPE_COLOUR 			3	// R G B
 #define SENSOR_TYPE_CONDUCTIVTIY 	4	// Resistance
-#define SENSOR_TYPE_HEART_RATE 		9	// Heart rate v2
+#define SENSOR_TYPE_HEART_RATE 		5	// Heart rate v2
 #define SENSOR_TYPE_VOC 			6	//  VOC 
 #define SENSOR_TYPE_HUMIDITY		7 
 #define SENSOR_TYPE_SOUND			8
+#define SENSOR_TYPE_TEMP_CALIB		9
+#define SENSOR_TYPE_HEART_RATE_2	10
 
 
 //Error codes
@@ -110,6 +112,6 @@ const char* sensor_name();
 uint16_t sensor_read(int16_t* dest);
 
 
-#define KIW_SENSOR_TYPE SENSOR_TYPE_HEART_RATE
+#define KIW_SENSOR_TYPE SENSOR_TYPE_HEART_RATE_2
 
 #endif /* SENSOR_H_ */
