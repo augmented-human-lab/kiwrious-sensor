@@ -835,7 +835,7 @@ uint32_t  measure (Samples_t *samples) {
     mValA = buffer[10];
     mValB = buffer[11];
     mValC = buffer[12];
-    samples->ch1 = (mValA << 16) | (mValB << 8) |(mValC);
+    samples->ch3 = (mValA << 16) | (mValB << 8) |(mValC);
     if ( samples->ch3 & 0x800000 ) {
         samples->ch3 |= 0xFF000000;
     }
