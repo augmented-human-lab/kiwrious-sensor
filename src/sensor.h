@@ -28,11 +28,8 @@ Definitions
 #define SENSOR_TYPE_HUMIDITY		7 
 #define SENSOR_TYPE_SOUND			8
 #define SENSOR_TYPE_TEMP_CALIB		9
-<<<<<<< HEAD
-=======
 #define SENSOR_TYPE_HEART_RATE_2	10
->>>>>>> heartrate-v2
-
+#define SENSOR_TYPE_UV_LIGHT_FIXED	11
 
 //Error codes
 #define K_SENSOR_OK			0
@@ -115,10 +112,7 @@ const char* sensor_name();
 uint16_t sensor_read(int16_t* dest);
 
 
-<<<<<<< HEAD
-#define KIW_SENSOR_TYPE SENSOR_TYPE_TEMP_CALIB
-=======
-#define KIW_SENSOR_TYPE SENSOR_TYPE_HEART_RATE_2
->>>>>>> heartrate-v2
+
+#define KIW_SENSOR_TYPE SENSOR_TYPE_UV_LIGHT_FIXED
 
 #endif /* SENSOR_H_ */

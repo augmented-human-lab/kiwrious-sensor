@@ -50,7 +50,7 @@ uint8_t sensor_init()
 
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_COLOUR
 	e = veml_init();
-#elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT
+#elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT ||  KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT_FIXED
 	e = Si1133_init();
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_BODY_TEMP
 	e = mrt311_init();
@@ -81,7 +81,7 @@ const char* sensor_name()
 		const char* s =  "Kiwrious VOC Sensor";
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_COLOUR
 		const char* s =  "Kiwrious Colour Sensor";
-#elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT
+#elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT ||  KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT_FIXED
 		const char* s =  "Kiwrious UV and Light Sensor";
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_BODY_TEMP
 		const char* s =  "Kiwrious Temperature Sensor";
@@ -151,7 +151,7 @@ uint16_t sensor_read(int16_t* dest)
 		return 4;
 	else
 		return 0;
-#elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT
+#elif KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT ||  KIW_SENSOR_TYPE == SENSOR_TYPE_UV_LIGHT_FIXED
 	float res[2]; //lux, uv
 	int8_t e = measure_lux_uv(&res[0], &res[1]);
 //	if (e == K_SENSOR_OK)
