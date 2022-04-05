@@ -58,6 +58,8 @@ uint8_t sensor_init()
 	e = mrt311_init();
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE
 	e = ppg_init();
+#elif KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE_2
+	e = ppg_init();
 #endif
 
 	return e;
@@ -86,6 +88,8 @@ const char* sensor_name()
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_TEMP_CALIB
 		const char* s =  "Kiwrious Temperature Sensor";
 #elif KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE
+		const char* s =  "Kiwrious Heart Rate Sensor";
+#elif KIW_SENSOR_TYPE == SENSOR_TYPE_HEART_RATE_2
 		const char* s =  "Kiwrious Heart Rate Sensor";
 #else
 		const char* s = "Kiwrious Sensor";

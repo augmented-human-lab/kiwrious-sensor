@@ -4,7 +4,7 @@ volatile bool pah_int = false;
 
 
 
-static uint32_t data[40];
+static uint32_t data[64];
 static bool new_data = false;
 static const uint32_t fifo_sample_num = 40;
 static const uint32_t sample_num = 20;
@@ -54,9 +54,9 @@ void fifo_handler(void* p, pah_report_fifo* fifo)
 
 
 
-	for (int i = 0; i < sample_num; i++)
+	for (int i = 0; i < fifo_sample_num; i++)
 	{
-		data[i] = *(uint32_t*)(fifo->data + i*8);
+		data[i] = *(uint32_t*)(fifo->data + i*4);
 	}
 	new_data = true;
 
@@ -69,7 +69,7 @@ int8_t ppg_init()
 	
 	//Initialize PPG sensor
 	pah_init(); 
-	pah_enter_mode(pah_ppg_200hz_mode);
+	pah_enter_mode(pah_ppg_mode);
 	pah_set_report_fifo_callback(&fifo_handler, 0);
 	
 	return K_SENSOR_OK;
@@ -96,11 +96,10 @@ void ppg_read(Kiw_DataPacket* packets)
 	
 			*/
 			
-			for (size_t j = 0; j < sample_num; j++)
+			for (size_t j = 0; j < fifo_sample_num; j++)
 			{
 				packets[j/4].data[(j%4)*2] = data[j];
 				packets[j/4].data[(j%4)*2+1] = data[j]>>16;
-
 			}
 			
 			new_data = false;
